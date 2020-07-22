@@ -1,0 +1,55 @@
+<html>
+<head>
+	<title>{% block title %}{% endblock %}عمر</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/static/main.css">
+</head>
+<body>
+
+<div class="wrap">
+	<div class="container">
+	<div id="user" class="row">
+	{% if user.is_authenticated %}
+		<a href="{% url 'logout' %}" title="خروج"><span class="glyphicon glyphicon-off"></span></a> |
+		<a href="{% url 'user' %}"><span class="glyphicon glyphicon-user"></span> {{ user.last_name }}</a>
+		{% block toplinks %}
+		{% endblock %}
+	{% else %}
+		<a href="{% url 'login' %}"><span class="glyphicon glyphicon-record"></span> ورود</a>
+	{% endif %}
+	</div>
+	</div>
+
+	{% block message %}
+	{% if messages %}
+	<div class="container">
+		<div id="message" style="margin-top: 50px;">
+		{% for message in messages %}
+			<div class="alert alert-{{ message.tags }}">{{ message|safe }}</div>
+		{% endfor %}
+		</div>
+	</div>
+	{% endif %}
+	{% endblock %}
+
+	{% block content %}
+	{% endblock %}
+
+	<div class="push"></div>
+</div>
+
+<script type="text/javascript" src="/static/jquery-3.3.1.min.js"></script>
+
+{% block script %}
+{% endblock %}
+
+<div class="footer">
+	<div class="container">
+		<hr>
+		<p class="pull-right"><a href="http://omr.sobhe.ir/">عمر</a> برف است و آفتاب تموز</p>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block toplinks %}
+    |<a href="{% url 'employee' organization.slug %}"><span class="glyphicon glyphicon-home"></span> {{ organization }}
+</a>
+    |<a href="{% url 'employee-notes' organization.slug %}"><span class="glyphicon glyphicon-envelope"></span>
+    پیام‌ها</a>
+    {% if is_admin %}|
+        <a href="{% url 'organization-hours' organization.slug %}"><span class="glyphicon glyphicon-time"></span>
+            ساعت‌ها</a>{% endif %}
+    | <a href="{% url 'organization' organization.slug %}"><span class="glyphicon glyphicon-stats"></span> آمار</a>
+{% endblock %}
+
+
+{% block content %}
+
+    <style type="text/css">
+    </style>
+
+    <div class="container">
+        <div class="row">
+            <div id="new-work" class="card white-card col-xs-12" style="margin: 80px 0 60px;">
+                <form action="{% url 'work-create' %}?next={{ next }}" method="post" class="work-form form-inline">
+                    <input type="hidden" name="employee" value="{{ object.id }}">
+                    <input type="hidden" name="organization" value="{{ organization.id }}">
+
+                    <input name="duration" type="text" value="00:00" class="form-control number text-center"
+                           pattern="[0-1۰-۱]?[0-9۰-۹]:[0-5۰-۵][0-9۰-۹]" required>
+                    <input name="date" type="text" value="{{ today }}" class="form-control number text-center"
+                           pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
+                    <select name="project" class="form-control">
+                        {% for project in organization.projects %}
+                            <option value="{{ project.id }}"
+                                    style="background-color: {{ project.color }}">{{ project.title }}</option>
+                        {% endfor %}
+                        <option value="" style="background-color: #efefef">...</option>
+                    </select>
+                    <input maxlength="255" name="description" type="text" value="" class="form-control"
+                           placeholder="تازه چه کرده‌اید؟">
+                    <a href="#" class="btn btn-success pull-left submit"><span class="glyphicon glyphicon-ok"></span>
+                        ثبت</a>
+                </form>
+            </div>
+
+            {% if works.count %}
+                <h3>ساعت‌ها</h3>
+            {% endif %}
+            <div class="works">
+                {% for work in works %}
+                    <div class="work card white-card" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
+                         data-project="{{ work.project.id }}">
+                        <div class="info">
+                            <span class="duration number pull-right">{{ work.duration_text }}</span>
+                            <span class="date number">{{ work.date_text }}</span>
+                            <span class="project label"
+                                  style="background-color: {{ work.project.color }}">{{ work.project.title }}</span>
+                            <span class="description">{{ work.description|default_if_none:"" }}</span>
+                            <a href="" class="edit pull-left"><span class="glyphicon glyphicon-pencil"></span></a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block script %}
+    <script type="text/javascript">
+
+        $('a.edit').click(function () {
+            $('.info').show();
+            $('.works form').hide();
+            item = $(this).parent().parent();
+            item.find('.info').hide()
+
+            workId = item.attr('data-id');
+            workDate = item.attr('data-date');
+            workProject = item.attr('data-project');
+            workDuration = item.find('span.duration').text();
+            workDescription = item.find('span.description').text();
+
+            item.append($('#new-work').html());
+            item.find('form').attr('action', "{% url 'work-update' 55555 %}?next={{ next }}".replace('55555', workId));
+            item.find('[name=duration]').val(workDuration);
+            item.find('[name=date]').val(workDate);
+            item.find('[name=description]').val(workDescription);
+            item.find('[name=project]').val(workProject).change();
+
+            item.find('[name=description]').width(item.find('[name=description]').width() - 80);
+            item.find('form').append('<a href="' + "{% url 'work-delete' 55555 %}?next={{ next }}".replace('55555', workId) + '" class="btn btn-danger pull-left delete"><span class="glyphicon glyphicon-remove"></span> حذف</a>');
+
+            return false;
+        });
+
+        $(document).on('input', 'input[name=duration], input[name=date]', function (e) {
+            input = e.target;
+            if (!input.checkValidity())
+                $(input).addClass('error');
+            else
+                $(input).removeClass('error');
+        });
+
+        $(document).on('click', 'a.submit', function () {
+            form = $(this).parent();
+            duration = form.find('[name=duration]').val().replace(/۰/g, '0');
+            if (form.find('.error').length > 0 || duration == '00:00' || duration == '0:00') {
+                alert('لطفا در ثبت زمان دقت کنید!');
+                return false;
+            }
+
+            form.submit();
+            return true;
+        });
+
+        $(document).on('click', 'a.delete', function () {
+            if (confirm('می‌خواهید این ردیف را حذف کنید؟'))
+                return true;
+            return false;
+        });
+
+        $(document).on('change', 'select', function () {
+            $(this).css('background-color', $(this).find('option:selected').attr('style').split(' ')[1]);
+        });
+        $('select').change();
+
+    </script>
+{% endblock %}

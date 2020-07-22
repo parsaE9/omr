@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block toplinks %}
+    |<a href="{% url 'employee' organization.slug %}"><span class="glyphicon glyphicon-home"></span> {{ organization }}
+</a>
+    |<a href="{% url 'employee-notes' organization.slug %}"><span class="glyphicon glyphicon-envelope"></span>
+    پیام‌ها</a>
+    {% if is_admin %}|
+        <a href="{% url 'organization-hours' organization.slug %}"><span class="glyphicon glyphicon-time"></span>
+            ساعت‌ها</a>{% endif %}
+    | <a href="{% url 'organization' organization.slug %}"><span class="glyphicon glyphicon-stats"></span> آمار</a>
+{% endblock %}
+
+
+{% block content %}
+
+    <div id="organization" class="container" style="margin-top: 40px;">
+        <h2 style="font-family:IRMitra">پروژه‌ها</h2>
+
+        <ul class="hours">
+            {% for item in works %}
+                <li>
+                    <span class="label"
+                          style="background-color: {{ item.project__color|default_if_none:'#bdbdbd' }}">{{ item.project__title|default_if_none:'...' }}</span>
+                    <span class="number">{{ item.duration }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+
+        {% if is_admin %}
+            <h2>افراد</h2>
+            <ul class="hours">
+                {% for item in employees %}
+                    <li>
+                        <a href="{% url 'employee-admin' organization.slug item.employee__username %}"
+                           class="label label-primary"
+                           style="color: white">{{ item.employee__last_name|default_if_none:'...' }}</a>
+                        <span class="number">{{ item.duration }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+
+        <h2>گذشته</h2>
+        <div id="chart" dir="ltr" style="height: 400px;">
+            <svg></svg>
+        </div>
+
+
+        <div id="new-work" class="card white-card col-xs-12" style=" margin-top: 20px;">
+            <form action="{% url 'organization' organization.slug %}?next={{ next }}" method="post"
+                  class="work-form form-inline">
+                <input type="hidden" name="employee" value="{{ object.id }}">
+                <input type="hidden" name="organization" value="{{ organization.id }}">
+
+                <label style="margin: 0 10px;">از تاریخ</label>
+
+                <input name="date-source" style="width: 90px;" type="text" value="1399/00/00"
+                       class="form-control number text-center"
+                       pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
+
+                <label style="margin: 0 10px;">تا</label>
+
+
+                <input name="date-end" style="width: 90px" type="text" value="1399/00/00"
+                       class="form-control number text-center"
+                       pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
+
+                <a href="{% url 'organization' organization.slug %}" class="btn btn-success pull-left submit"><span
+                        class="glyphicon glyphicon-ok"></span>
+                    ثبت</a>
+            </form>
+        </div>
+
+        <div class="container">
+            <h1>HOME</h1>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="text">
+                <button type="submit">submit</button>
+            </form>
+            <h2>{{ text }}</h2>
+        </div>
+
+    </div>
+
+
+    <style>
+        .tick line {
+            display: none;
+        }
+
+    </style>
+
+{% endblock content %}
+
+{% block script %}
+
+    <script type="text/javascript" src="/static/jdate.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.min.js"></script>
+    <link href="/static/nv.d3.min.css" rel="stylesheet">
+
+    <script type="text/javascript">
+        var projects_data = {
+            {% for item in works %}"{{ item.project__title|default_if_none:'...' }}":
+                "{{ item.project__color|default_if_none:'#bdbdbd' }}",{% endfor %}
+        }
+        var data = [
+                {% for item in data %}['{{ item.date }}', '{{ item.title|default_if_none:'...' }}', {{ item.duration }}
+                    ],{% endfor %}
+        ]
+
+        var dark_color = {
+            '#aec7e8': '#1f77b4',
+            '#ffbb78': '#ff7f0e',
+            '#98df8a': '#2ca02c',
+            '#ff9896': '#d62728',
+            '#c5b0d5': '#9467bd',
+            '#c49c94': '#8c564b',
+            '#f7b6d2': '#e377c2',
+            '#c7c7c7': '#7f7f7f',
+            '#dbdb8d': '#bcbd22',
+            '#9edae5': '#17becf'
+        }
+        var project_colors = $.map(Object.values(projects_data), function (color) {
+            return dark_color[color] ? dark_color[color] : color
+        });
+
+        function prepareData() {
+            var dates = [], items = {};
+            var projects = Object.keys(projects_data);
+
+            data.forEach(function (item) {
+                if (dates.indexOf(item[0]) < 0)
+                    dates.push(item[0]);
+                items[item[0] + item[1]] = Math.round(item[2] / 3600);
+            });
+
+            var series = $.map(projects, function (project) {
+                return {key: project, values: []}
+            });
+            dates.forEach(function (date, d) {
+                projects.forEach(function (project, p) {
+                    value = items[date + project];
+                    series[p].values[d] = {x: date, y: value ? value : 0};
+                });
+            });
+
+            return series;
+        }
+
+
+    </script>
+    <script type="text/javascript">
+        nv.addGraph(function () {
+
+            var chart = nv.models.multiBarChart()
+                .duration(350)
+                .reduceXTicks(true)
+                .rotateLabels(-45)
+                .stacked(true)
+                .showControls(false)
+                .groupSpacing(0.3)
+            chart.tooltip.enabled(true);
+
+            chart.tooltip.contentGenerator(function (e) {
+                var series = e.series[0];
+                if (series.value === null) return;
+
+                var rows =
+                    "<tr>" +
+                    "<td class='key'><small style='font-family: IRMitra, Arial;font-size:16px'>" + 'تاریخ: ' + "</small></td>" +
+                    "<td class='x-value'><small style='font-family: BMitra;font-size:16px'>" + e.value + "</small></td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<td class='key'><small style='font-family: IRMitra, Arial;font-size:16px'>" + 'کارکرد: ' + "</small></td>" +
+                    "<td class='x-value'><small style='font-family:BMitra;font-size:16px'>" + convertDigitIn(series.value ? series.value.toFixed() : 0) + " ساعت " + "</small></td>" +
+                    "</tr>";
+
+                var header =
+                    "<thead>" +
+                    "<tr>" +
+                    "<td class='key'><small style='font-family: IRMitra, Arial;font-size:16px'>" + 'پروژه‌: ' + "</small></td>" +
+                    "<td <div class='key'><small style='font-family: IRMitra, Arial;font-size:16px'>" + series.key + "</small></div></td>" +
+                    "</tr>" +
+                    "</thead>";
+
+                return "<table  style='margin:0px'>" +
+                    header +
+                    "<tbody>" +
+                    rows +
+                    "</tbody>" +
+                    "</table>";
+            });
+
+            chart.yAxis.tickFormat(d3.format('f'));
+            chart.color(project_colors);
+
+            d3.select('#chart svg')
+                .datum(prepareData())
+                .call(chart);
+
+            nv.utils.windowResize(chart.update);
+
+            return chart;
+        });
+
+
+        //=================================
+        function convertDigitIn(enDigit) { // PERSIAN, ARABIC, URDO
+            var newValue = "";
+            for (var i = 0; i < enDigit.length; i++) {
+                var ch = enDigit.charCodeAt(i);
+                if (ch >= 48 && ch <= 57) {
+                    // european digit range
+                    var newChar = ch + 1584;
+                    newValue = newValue + String.fromCharCode(newChar);
+                } else
+                    newValue = newValue + String.fromCharCode(ch);
+            }
+            return newValue;
+        }
+    </script>
+{% endblock %}

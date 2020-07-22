@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block toplinks %}
+| <a href="{% url 'employee' organization.slug %}"><span class="glyphicon glyphicon-home"></span> {{ organization }}</a>
+| <a href="{% url 'organization' organization.slug %}"><span class="glyphicon glyphicon-stats"></span> آمار</a>
+{% endblock %}
+
+
+{% block content %}
+<div class="container" style="margin-top: 80px;">
+	<p>لطفا ردیف‌های ساعت را با قالب نمونه وارد کنید:</p>
+	<form action="{% url 'organization-import' organization.slug %}" method="post" dir="ltr">
+		<textarea class="form-control" name="items" style="height: 400px; margin-bottom: 10px; font-size: 95%;" placeholder="email1,2017-01-01,1:00:00,project1,description1
+email2,2017-02-02,2:00:00,project2,description2
+..."></textarea>
+		<input type="submit" value="ثبت" class="btn btn-primary">
+	</form>
+</div>
+{% endblock content %}

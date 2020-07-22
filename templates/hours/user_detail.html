@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block toplinks %}
+{% for organization in organizations %}
+| <a href="{% url 'employee' organization.slug %}"><span class="glyphicon glyphicon-home"></span> {{ organization }}</a>
+{% endfor %}
+{% endblock %}
+
+
+{% block content %}
+<div class="small-container">
+	<h2>{{ object.last_name }}</h2>
+	<p>{{ object.email }}</p>
+	<a href="{% url 'password_change' %}">تغییر گذرواژه</a>
+
+</div>
+{% endblock %}

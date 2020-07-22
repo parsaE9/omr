@@ -1,0 +1,6 @@
+static_root
+.vscode
+.idea
+*.pyc
+*.db
+*.csv
