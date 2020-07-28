@@ -16,7 +16,6 @@ urlpatterns = [
 	path('accounts/', include('accounts.urls')),
 
 
-
 	url(r'^user/?$', login_required(UserDetail.as_view()), name='user'),
 
 	url(r'^works/create/?$', login_required(WorkCreate.as_view()), name='work-create'),

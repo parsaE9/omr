@@ -14,8 +14,6 @@ from django.db.models.functions import Trunc
 from django.core.mail import send_mail
 from hours.models import *
 from hours.persian import normalize_digits, persian_numbers
-from django.views.generic import TemplateView
-from hours.forms import StatForm
 
 
 class EmployeeHours(DetailView):
@@ -25,9 +23,13 @@ class EmployeeHours(DetailView):
     def get_object(self, **kwargs):
         if self.kwargs.get('employee'):
             return get_object_or_404(User, username=self.kwargs.get('employee'))
+        print("USER = ")
+        print(self.request.user)
         return self.request.user
 
     def get_context_data(self, **kwargs):
+        print("USER = ")
+        print(self.request.user)
         organization = get_object_or_404(Organization, slug=self.kwargs.get('slug'))
         context = super(EmployeeHours, self).get_context_data(**kwargs)
         context['organization'] = organization
@@ -89,79 +91,77 @@ class OrganizationHours(DetailView):
 class OrganizationStats(DetailView):
     model = Organization
 
-    def post(self, request):
-        form = StatForm(request.POST)
-        if form.is_valid():
-            text = form.cleaned_data['post']
-            form = StatForm()
-            return redirect('home:home')
-        else:
-            text = "form is not valid"
-        args = {'form': form, 'text': text}
-        return render(request, self.template_name, args)
-
     def get_context_data(self, **kwargs):
-            context = super(OrganizationStats, self).get_context_data(**kwargs)
-            # context['today'] = jdatetime.date.today().strftime('%Y/%m/%d')
+        context = super(OrganizationStats, self).get_context_data(**kwargs)
+        print("--------------")
+        # print(self.request.user)
+        # print(self.request.POST)
+        # print(self.request.GET)
 
-            if self.request.user not in self.object.employees.all():
-                raise PermissionDenied
+        # context['today'] = jdatetime.date.today().strftime('%Y/%m/%d')
+        # print(request.GET['date-source'])
+        if self.request.user not in self.object.employees.all():
+            raise PermissionDenied
 
-            context['is_admin'] = self.request.user == self.object.admin
+        context['is_admin'] = self.request.user == self.object.admin
 
-            def format_durations(items):
-                items = list(items)
-                for item in items:
-                    item['duration'] = time_format(item['duration'])
-                return items
+        def format_durations(items):
+            items = list(items)
+            for item in items:
+                item['duration'] = time_format(item['duration'])
+            return items
 
-            # TODO
-
-            a = jdatetime.jalali.JalaliToGregorian(1398, 4, 30)
-            gregorian_date_source = str(a.gyear) + "-" + str(a.gmonth) + "-" + str(a.gday)
-            b = jdatetime.jalali.JalaliToGregorian(1399, 4, 31)
-            gregorian_date_end = str(b.gyear) + "-" + str(b.gmonth) + "-" + str(b.gday)
-
+        try:
+            print(self.request.GET['date-source'])
+            print(self.request.GET['date-end'])
+            split_source = self.request.GET['date-source'].split('/')
+            split_end = self.request.GET['date-end'].split('/')
+            source = jdatetime.jalali.JalaliToGregorian(int(split_source[0]), int(split_source[1]), int(split_source[2]))
+            gregorian_date_source = str(source.gyear) + "-" + str(source.gmonth) + "-" + str(source.gday)
+            end = jdatetime.jalali.JalaliToGregorian(int(split_end[0]), int(split_end[1]), int(split_end[2]))
+            gregorian_date_end = str(end.gyear) + "-" + str(end.gmonth) + "-" + str(end.gday)
             context['works'] = Work.objects.filter(organization=self.object,
                                                    date__range=[gregorian_date_source, gregorian_date_end])
-            # if not context['works']:
-            #     context['works'] = Work.objects.filter(organization=self.object)
+            HttpResponse
+        except:
+            context['works'] = Work.objects.filter(organization=self.object)
 
-            # TODO END
+        # if not context['works']:
+        #     context['works'] = Work.objects.filter(organization=self.object)
 
-            if not context['is_admin']:
-                context['works'] = context['works'].filter(employee=self.request.user)
+        if not context['is_admin']:
+            context['works'] = context['works'].filter(employee=self.request.user)
 
-            if context['is_admin']:
-                context['employees'] = format_durations(
-                    Work.objects.filter(organization=self.object, employee__is_active=True).
-                        values('employee__last_name', 'employee__username').annotate(duration=Sum('duration')).order_by(
-                        'employee'))
+        if context['is_admin']:
+            context['employees'] = format_durations(
+                Work.objects.filter(organization=self.object, employee__is_active=True).
+                    values('employee__last_name', 'employee__username').annotate(duration=Sum('duration')).order_by(
+                    'employee'))
 
-            context['data'] = context['works'].values('project__title').annotate(date=Trunc('date', 'day'),
-                                                                                 duration=Sum('duration')).order_by('date')
-            context['works'] = context['works'].values('project__title', 'project__color').annotate(
-                duration=Sum('duration')).order_by('project')
+        context['data'] = context['works'].values('project__title').annotate(date=Trunc('date', 'day'),
+                                                                             duration=Sum('duration')).order_by('date')
+        context['works'] = context['works'].values('project__title', 'project__color').annotate(
+            duration=Sum('duration')).order_by('project')
 
-            chart_data = {}
-            for item in context['data']:
-                jalali = jalali_date(item['date']).strftime('%b %y')
+        chart_data = {}
+        for item in context['data']:
+            jalali = jalali_date(item['date']).strftime('%b %y')
 
-                key = str(item['project__title']) + jalali
-                if key not in chart_data:
-                    chart_data[key] = {
-                        'title': item['project__title'],
-                        'date': jalali,
-                        'duration': item['duration'].seconds
-                    }
-                else:
-                    chart_data[key]['duration'] += item['duration'].seconds
+            key = str(item['project__title']) + jalali
+            if key not in chart_data:
+                chart_data[key] = {
+                    'title': item['project__title'],
+                    'date': jalali,
+                    'duration': item['duration'].seconds
+                }
+            else:
+                chart_data[key]['duration'] += item['duration'].seconds
 
-            context['data'] = list(chart_data.values())
+        context['data'] = list(chart_data.values())
 
-            context['works'] = format_durations(context['works'])
+        context['works'] = format_durations(context['works'])
 
-            return context
+        return context
 
 
 class UserDetail(DetailView):

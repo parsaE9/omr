@@ -47,45 +47,24 @@
             <svg></svg>
         </div>
 
-
         <div id="new-work" class="card white-card col-xs-12" style=" margin-top: 20px;">
-            <form action="{% url 'organization' organization.slug %}?next={{ next }}" method="post"
-                  class="work-form form-inline">
-                <input type="hidden" name="employee" value="{{ object.id }}">
-                <input type="hidden" name="organization" value="{{ organization.id }}">
 
+            <form action="" method="get" class="work-form form-inline">
                 <label style="margin: 0 10px;">از تاریخ</label>
-
-                <input name="date-source" style="width: 90px;" type="text" value="1399/00/00"
-                       class="form-control number text-center"
-                       pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
-
+                <label>
+                    <input name="date-source" style="width: 120px;" type="text" value="1399/01/01" class="form-control number text-center"
+                           pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
+                </label>
                 <label style="margin: 0 10px;">تا</label>
-
-
-                <input name="date-end" style="width: 90px" type="text" value="1399/00/00"
-                       class="form-control number text-center"
-                       pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
-
-                <a href="{% url 'organization' organization.slug %}" class="btn btn-success pull-left submit"><span
-                        class="glyphicon glyphicon-ok"></span>
-                    ثبت</a>
+                <label>
+                    <input name="date-end" style="width: 120px" type="text" value="1399/12/29" class="form-control number text-center"
+                           pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
+                </label>
+                <input type="submit" value="ثبت" class="btn btn-success pull-left submit">
             </form>
-        </div>
-
-        <div class="container">
-            <h1>HOME</h1>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <input type="text">
-                <button type="submit">submit</button>
-            </form>
-            <h2>{{ text }}</h2>
         </div>
 
     </div>
-
 
     <style>
         .tick line {
