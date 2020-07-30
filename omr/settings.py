@@ -8,6 +8,7 @@ SECRET_KEY = '25nygr&*m8xyaq*wo2g&z4grnt9pxq&#mk_d7_3*4imbp$3#m0'
 
 # DEBUG = os.environ.get('DEBUG', '') == 'True'
 DEBUG = True
+
 ALLOWED_HOSTS = ['*']
 INTERNAL_IPS = ['127.0.0.1']
 

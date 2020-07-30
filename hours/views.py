@@ -1,6 +1,6 @@
 import jdatetime
 from django import forms
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.dateparse import parse_duration
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -14,6 +14,7 @@ from django.db.models.functions import Trunc
 from django.core.mail import send_mail
 from hours.models import *
 from hours.persian import normalize_digits, persian_numbers
+from .forms import ChartDateForm
 
 
 class EmployeeHours(DetailView):
@@ -84,22 +85,24 @@ class OrganizationHours(DetailView):
 
         if self.request.user != context['organization'].admin:
             raise PermissionDenied
-
         return context
 
 
 class OrganizationStats(DetailView):
     model = Organization
+    my_dictionary = {}
+    # form = ChartDateForm()
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationStats, self).get_context_data(**kwargs)
         print("--------------")
-        # print(self.request.user)
-        # print(self.request.POST)
+        print("get_context_data POST = {} ".format(self.request.POST))
+        print("dictionary is : {}".format(self.my_dictionary))
         # print(self.request.GET)
-
-        # context['today'] = jdatetime.date.today().strftime('%Y/%m/%d')
         # print(request.GET['date-source'])
+        # print(self.request.user)
+
+        context['today'] = jdatetime.date.today().strftime('%Y/%m/%d')
         if self.request.user not in self.object.employees.all():
             raise PermissionDenied
 
@@ -111,23 +114,28 @@ class OrganizationStats(DetailView):
                 item['duration'] = time_format(item['duration'])
             return items
 
-        try:
-            print(self.request.GET['date-source'])
-            print(self.request.GET['date-end'])
-            split_source = self.request.GET['date-source'].split('/')
-            split_end = self.request.GET['date-end'].split('/')
-            source = jdatetime.jalali.JalaliToGregorian(int(split_source[0]), int(split_source[1]), int(split_source[2]))
+        # TODO BEGIN
+
+        gregorian_date_source = ''
+        gregorian_date_end = ''
+
+        if self.my_dictionary.get('date-source') and self.my_dictionary.get('date-end'):
+            split_source = self.my_dictionary['date-source'].split('/')
+            split_end = self.my_dictionary['date-end'].split('/')
+            source = jdatetime.jalali.JalaliToGregorian(int(split_source[0]), int(split_source[1]),
+                                                        int(split_source[2]))
             gregorian_date_source = str(source.gyear) + "-" + str(source.gmonth) + "-" + str(source.gday)
             end = jdatetime.jalali.JalaliToGregorian(int(split_end[0]), int(split_end[1]), int(split_end[2]))
             gregorian_date_end = str(end.gyear) + "-" + str(end.gmonth) + "-" + str(end.gday)
             context['works'] = Work.objects.filter(organization=self.object,
                                                    date__range=[gregorian_date_source, gregorian_date_end])
-            HttpResponse
-        except:
+        else:
             context['works'] = Work.objects.filter(organization=self.object)
 
-        # if not context['works']:
-        #     context['works'] = Work.objects.filter(organization=self.object)
+        self.my_dictionary['date-source'] = ''
+        self.my_dictionary['date-end'] = ''
+
+        # TODO END
 
         if not context['is_admin']:
             context['works'] = context['works'].filter(employee=self.request.user)
@@ -158,10 +166,30 @@ class OrganizationStats(DetailView):
                 chart_data[key]['duration'] += item['duration'].seconds
 
         context['data'] = list(chart_data.values())
-
         context['works'] = format_durations(context['works'])
 
+        # try:
+        #     context['works'] = self.object.work_set.filter(organization=context['organization'], date__range=[gregorian_date_source, gregorian_date_end]).select_related('project').order_by('-date', '-id')
+        # except:
+        #     context['works'] = self.object.work_set.filter(organization=context['organization'],
+        #                                                    date__range=[gregorian_date_source,gregorian_date_end]).select_related(
+        #                                                         'project').order_by('-date', '-id')
+        self.my_dictionary['date-source'] = ''
+        self.my_dictionary['date-end'] = ''
+
         return context
+
+    def post(self, request, *args, **kwargs):
+        print(f"post POST = {self.request.POST}")
+        self.my_dictionary['date-source'] = self.request.POST['date-source']
+        self.my_dictionary['date-end'] = self.request.POST['date-end']
+        print("my dictionary = {}".format(self.my_dictionary))
+        print("POST = {}".format(self.request.POST))
+        return HttpResponseRedirect('./stats')
+
+    # def get(self, request, *args, **kwargs):
+    #     print("&&&&&&&&&&GET*&&&&&&&&&&&&&&")
+    #     return HttpResponse("get")
 
 
 class UserDetail(DetailView):

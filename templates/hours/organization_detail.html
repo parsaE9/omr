@@ -46,22 +46,55 @@
         <div id="chart" dir="ltr" style="height: 400px;">
             <svg></svg>
         </div>
+        <div class="row">
+            <div id="new-work" class="card white-card col-xs-12" style=" margin-top: 20px;">
 
-        <div id="new-work" class="card white-card col-xs-12" style=" margin-top: 20px;">
+                <form action="" method="POST" class="work-form form-inline">
+                    {% csrf_token %}
+                    <label style="margin: 0 10px;">از تاریخ</label>
+                    <label>
+                        <input name="date-source" style="width: 120px;" type="text" value="1399/01/01"
+                               class="form-control number text-center"
+                               pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
+                    </label>
+                    <label style="margin: 0 10px;">تا</label>
+                    <label>
+                        <input name="date-end" style="width: 120px" type="text" value={{ today }} class="form-control number text-center"
+                        pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
+                    </label>
+                    <input type="submit" value="ثبت" class="btn btn-success pull-left submit">
+                </form>
 
-            <form action="" method="get" class="work-form form-inline">
-                <label style="margin: 0 10px;">از تاریخ</label>
-                <label>
-                    <input name="date-source" style="width: 120px;" type="text" value="1399/01/01" class="form-control number text-center"
-                           pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
-                </label>
-                <label style="margin: 0 10px;">تا</label>
-                <label>
-                    <input name="date-end" style="width: 120px" type="text" value="1399/12/29" class="form-control number text-center"
-                           pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
-                </label>
-                <input type="submit" value="ثبت" class="btn btn-success pull-left submit">
-            </form>
+            </div>
+
+            {% if works %}
+                <h1>{{ works }}</h1>
+            {% else %}
+                <h1>no work</h1>
+            {% endif %}
+
+            {% if works %}
+                <h3>ساعت‌ها</h3>
+                <div class="works">
+                    {% for work in works %}
+                        <div class="work card white-card" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
+                             data-project="{{ work.project.id }}">
+                            <div class="info">
+                                <span class="duration number pull-right">{{ work.duration_text }}</span>
+                                <span class="date number">{{ work.date_text }}</span>
+                                <span class="project label"
+                                      style="background-color: {{ work.project.color }}">{{ work.project.title }}</span>
+                                <span class="description">{{ work.description|default_if_none:"" }}</span>
+                                <a href="" class="edit pull-left"><span class="glyphicon glyphicon-pencil"></span></a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <h3>NO HOURS</h3>
+            {% endif %}
+
+
         </div>
 
     </div>
