@@ -1,5 +1,5 @@
 from django.conf.urls import url
-import accounts.views
+from accounts.views import *
 from django.contrib.auth.views import (
     LoginView, LogoutView, logout_then_login,
     PasswordChangeView, PasswordChangeDoneView,
@@ -8,10 +8,10 @@ from django.contrib.auth.views import (
 from django.urls import path
 
 urlpatterns = [
-    url(r'^signup/?$', accounts.views.signup, name='signup'),
+    url(r'^signup/?$', signup, name='signup'),
     # path('signup', accounts.views.signup, name='signup'),
 
-    url(r'^login/?$', accounts.views.email_login, name='login'),
+    url(r'^login/?$', email_login, name='login'),
     # path('login/?', accounts.views.email_login, name='login'),
 
     url(r'^logout/?$', logout_then_login, name='logout'),
@@ -31,6 +31,5 @@ urlpatterns = [
 
     url(r'^password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
         PasswordResetConfirmView.as_view(success_url='complete/'), name='password_reset_confirm'),
-    url(r'^password/reset/complete/$', PasswordResetCompleteView.as_view(),
-        name='password_reset_complete'),
+    url(r'^password/reset/complete/$', PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ]

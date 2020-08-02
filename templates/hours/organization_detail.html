@@ -53,13 +53,14 @@
                     {% csrf_token %}
                     <label style="margin: 0 10px;">از تاریخ</label>
                     <label>
-                        <input name="date-source" style="width: 120px;" type="text" value="1399/01/01"
+                        <input name="date-source" style="width: 120px;" type="text" value={{ date_source }}
                                class="form-control number text-center"
                                pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
                     </label>
                     <label style="margin: 0 10px;">تا</label>
                     <label>
-                        <input name="date-end" style="width: 120px" type="text" value={{ today }} class="form-control number text-center"
+                        <input name="date-end" style="width: 120px" type="text" value={{ date_end }} class="form-control
+                               number text-center"
                         pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
                     </label>
                     <input type="submit" value="ثبت" class="btn btn-success pull-left submit">
@@ -68,15 +69,10 @@
             </div>
 
             {% if works %}
-                <h1>{{ works }}</h1>
-            {% else %}
-                <h1>no work</h1>
-            {% endif %}
 
-            {% if works %}
-                <h3>ساعت‌ها</h3>
+                <h3 style="margin-top: 100px;">ساعت‌ها</h3>
                 <div class="works">
-                    {% for work in works %}
+                    {% for work in hours %}
                         <div class="work card white-card" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
                              data-project="{{ work.project.id }}">
                             <div class="info">
@@ -90,8 +86,6 @@
                         </div>
                     {% endfor %}
                 </div>
-            {% else %}
-                <h3>NO HOURS</h3>
             {% endif %}
 
 

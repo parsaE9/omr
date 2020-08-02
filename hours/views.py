@@ -3,7 +3,6 @@ from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.dateparse import parse_duration
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
 from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
@@ -14,7 +13,6 @@ from django.db.models.functions import Trunc
 from django.core.mail import send_mail
 from hours.models import *
 from hours.persian import normalize_digits, persian_numbers
-from .forms import ChartDateForm
 
 
 class EmployeeHours(DetailView):
@@ -91,6 +89,7 @@ class OrganizationHours(DetailView):
 class OrganizationStats(DetailView):
     model = Organization
     my_dictionary = {}
+
     # form = ChartDateForm()
 
     def get_context_data(self, **kwargs):
@@ -116,8 +115,6 @@ class OrganizationStats(DetailView):
 
         # TODO BEGIN
 
-        gregorian_date_source = ''
-        gregorian_date_end = ''
 
         if self.my_dictionary.get('date-source') and self.my_dictionary.get('date-end'):
             split_source = self.my_dictionary['date-source'].split('/')
@@ -129,13 +126,20 @@ class OrganizationStats(DetailView):
             gregorian_date_end = str(end.gyear) + "-" + str(end.gmonth) + "-" + str(end.gday)
             context['works'] = Work.objects.filter(organization=self.object,
                                                    date__range=[gregorian_date_source, gregorian_date_end])
+            context['hours'] = self.object.work_set.filter(organization=context['organization'],
+                                                           date__range=[gregorian_date_source,
+                                                                        gregorian_date_end]).select_related(
+                                                                            'project').order_by('-date', '-id')
+            context['date_source'] = self.my_dictionary['date-source']
+            context['date_end'] = self.my_dictionary['date-end']
+
         else:
             context['works'] = Work.objects.filter(organization=self.object)
+            context['hours'] = self.object.work_set.filter(organization=context['organization']).select_related(
+                'project').order_by('-date', '-id')
 
-        self.my_dictionary['date-source'] = ''
-        self.my_dictionary['date-end'] = ''
-
-        # TODO END
+            context['date_source'] = "1399/01/01"
+            context['date_end'] = context['today']
 
         if not context['is_admin']:
             context['works'] = context['works'].filter(employee=self.request.user)
@@ -168,12 +172,6 @@ class OrganizationStats(DetailView):
         context['data'] = list(chart_data.values())
         context['works'] = format_durations(context['works'])
 
-        # try:
-        #     context['works'] = self.object.work_set.filter(organization=context['organization'], date__range=[gregorian_date_source, gregorian_date_end]).select_related('project').order_by('-date', '-id')
-        # except:
-        #     context['works'] = self.object.work_set.filter(organization=context['organization'],
-        #                                                    date__range=[gregorian_date_source,gregorian_date_end]).select_related(
-        #                                                         'project').order_by('-date', '-id')
         self.my_dictionary['date-source'] = ''
         self.my_dictionary['date-end'] = ''
 
@@ -186,10 +184,6 @@ class OrganizationStats(DetailView):
         print("my dictionary = {}".format(self.my_dictionary))
         print("POST = {}".format(self.request.POST))
         return HttpResponseRedirect('./stats')
-
-    # def get(self, request, *args, **kwargs):
-    #     print("&&&&&&&&&&GET*&&&&&&&&&&&&&&")
-    #     return HttpResponse("get")
 
 
 class UserDetail(DetailView):
