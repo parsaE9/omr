@@ -115,7 +115,6 @@ class OrganizationStats(DetailView):
 
         # TODO BEGIN
 
-
         if self.my_dictionary.get('date-source') and self.my_dictionary.get('date-end'):
             split_source = self.my_dictionary['date-source'].split('/')
             split_end = self.my_dictionary['date-end'].split('/')
@@ -129,9 +128,10 @@ class OrganizationStats(DetailView):
             context['hours'] = self.object.work_set.filter(organization=context['organization'],
                                                            date__range=[gregorian_date_source,
                                                                         gregorian_date_end]).select_related(
-                                                                            'project').order_by('-date', '-id')
+                'project').order_by('-date', '-id')
             context['date_source'] = self.my_dictionary['date-source']
             context['date_end'] = self.my_dictionary['date-end']
+            # context['select_'] = self.my_dictionary['employee_select']
 
         else:
             context['works'] = Work.objects.filter(organization=self.object)
@@ -143,12 +143,29 @@ class OrganizationStats(DetailView):
 
         if not context['is_admin']:
             context['works'] = context['works'].filter(employee=self.request.user)
+            context['hours'] = context['hours'].filter(employee=self.request.user)
 
         if context['is_admin']:
             context['employees'] = format_durations(
                 Work.objects.filter(organization=self.object, employee__is_active=True).
                     values('employee__last_name', 'employee__username').annotate(duration=Sum('duration')).order_by(
                     'employee'))
+
+            context['employee_names'] = context['employees']
+            context['is_selected'] = False
+            last_name = self.my_dictionary.get('employee_select')
+            if last_name and last_name != 'همه':
+                # print("in if self.my_dictionary['select'] = {}".format(self.my_dictionary.get('select')))
+                context['works'] = context['works'].filter(employee__last_name=last_name)
+                context['hours'] = context['hours'].filter(employee__last_name=last_name)
+                # context['employees'] = context['employees'].filter(last_name=last_name)
+                # print(context['employees'][0])
+                context['employee_names'] = format_durations(
+                    Work.objects.filter(organization=self.object, employee__is_active=True,
+                                        employee__last_name=last_name).
+                        values('employee__last_name', 'employee__username').annotate(duration=Sum('duration')).order_by(
+                        'employee'))
+                context['is_selected'] = True
 
         context['data'] = context['works'].values('project__title').annotate(date=Trunc('date', 'day'),
                                                                              duration=Sum('duration')).order_by('date')
@@ -174,15 +191,22 @@ class OrganizationStats(DetailView):
 
         self.my_dictionary['date-source'] = ''
         self.my_dictionary['date-end'] = ''
+        self.my_dictionary['employee_select'] = ''
 
         return context
 
     def post(self, request, *args, **kwargs):
         print(f"post POST = {self.request.POST}")
-        self.my_dictionary['date-source'] = self.request.POST['date-source']
-        self.my_dictionary['date-end'] = self.request.POST['date-end']
+        self.my_dictionary['date-source'] = self.request.POST.get('date-source')
+        self.my_dictionary['date-end'] = self.request.POST.get('date-end')
+        self.my_dictionary['employee_select'] = self.request.POST['employee_select']
+        # if self.my_dictionary.get('employee_select') and self.my_dictionary.get('employee_select') != 'همه':
+
+
+
         print("my dictionary = {}".format(self.my_dictionary))
         print("POST = {}".format(self.request.POST))
+        print("self.my_dictionary['employee_select'] = {}".format(self.my_dictionary.get('employee_select')))
         return HttpResponseRedirect('./stats')
 
 

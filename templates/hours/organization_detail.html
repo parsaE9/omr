@@ -30,12 +30,16 @@
         {% if is_admin %}
             <h2>افراد</h2>
             <ul class="hours">
-                {% for item in employees %}
+                {% for item in employee_names %}
                     <li>
                         <a href="{% url 'employee-admin' organization.slug item.employee__username %}"
                            class="label label-primary"
                            style="color: white">{{ item.employee__last_name|default_if_none:'...' }}</a>
-                        <span class="number">{{ item.duration }}</span>
+                        {% if is_selected %}
+                            <span class="number">  تعداد روز های غیبت</span>
+                            <span class="number">  تعداد روز های حضور{{ hours.count }}</span>
+                        {% endif %}
+                        <span class="number"> مجموع ساعات{{ item.duration }}</span>
                     </li>
                 {% endfor %}
             </ul>
@@ -54,8 +58,8 @@
                     <label style="margin: 0 10px;">از تاریخ</label>
                     <label>
                         <input name="date-source" style="width: 120px;" type="text" value={{ date_source }}
-                               class="form-control number text-center"
-                               pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
+                                class="form-control number text-center"
+                        pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
                     </label>
                     <label style="margin: 0 10px;">تا</label>
                     <label>
@@ -63,6 +67,18 @@
                                number text-center"
                         pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
                     </label>
+                    {% if is_admin %}
+                        <label>
+                            <select class="project label" name="employee_select" style="margin-right: 20px;">
+                                {% for item in employees %}
+                                    <option>
+                                        {{ item.employee__last_name }}
+                                    </option>
+                                {% endfor %}
+                                <option>همه</option>
+                            </select>
+                        </label>
+                    {% endif %}
                     <input type="submit" value="ثبت" class="btn btn-success pull-left submit">
                 </form>
 
@@ -76,12 +92,15 @@
                         <div class="work card white-card" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
                              data-project="{{ work.project.id }}">
                             <div class="info">
+                                {% if is_admin %}
+                                    <span class="duration number pull-right">{{ work.employee.last_name }}</span>
+                                {% endif %}
+
                                 <span class="duration number pull-right">{{ work.duration_text }}</span>
                                 <span class="date number">{{ work.date_text }}</span>
                                 <span class="project label"
                                       style="background-color: {{ work.project.color }}">{{ work.project.title }}</span>
                                 <span class="description">{{ work.description|default_if_none:"" }}</span>
-                                <a href="" class="edit pull-left"><span class="glyphicon glyphicon-pencil"></span></a>
                             </div>
                         </div>
                     {% endfor %}
