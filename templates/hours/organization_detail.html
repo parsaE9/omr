@@ -31,7 +31,7 @@
             <h2>افراد</h2>
             <ul class="hours">
                 {% for item in employee_names %}
-                    <li>
+                    <li class="nav-item">
                         <a href="{% url 'employee-admin' organization.slug item.employee__username %}"
                            class="label label-primary"
                            style="color: white">{{ item.employee__last_name|default_if_none:'...' }}</a>
@@ -51,31 +51,31 @@
             <svg></svg>
         </div>
         <div class="row">
-            <div id="new-work" class="card white-card col-xs-12" style=" margin-top: 20px;">
+            <div id="new-work" class="card white-card col-xs-12 " style=" margin-top: 20px;">
 
                 <form action="" method="POST" class="work-form form-inline">
                     {% csrf_token %}
                     <label style="margin: 0 10px;">از تاریخ</label>
                     <label>
-                        <input name="date-source" style="width: 120px;" type="text" value={{ date_source }}
-                                class="form-control number text-center"
-                        pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
+                        <input name="date-source" style="width: 120px;" type="text" value="{{ date_source }}"
+                               class="form-control number text-center"
+                               pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
                     </label>
                     <label style="margin: 0 10px;">تا</label>
                     <label>
-                        <input name="date-end" style="width: 120px" type="text" value={{ date_end }} class="form-control
+                        <input name="date-end" style="width: 120px" type="text" value="{{ date_end }}" class="form-control
                                number text-center"
-                        pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
+                               pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
                     </label>
                     {% if is_admin %}
                         <label>
                             <select class="project label" name="employee_select" style="margin-right: 20px;">
+                                <option>همه</option>
                                 {% for item in employees %}
                                     <option>
                                         {{ item.employee__last_name }}
                                     </option>
                                 {% endfor %}
-                                <option>همه</option>
                             </select>
                         </label>
                     {% endif %}
@@ -83,24 +83,23 @@
                 </form>
 
             </div>
-
+            <br>
+            <br>
+            <br>
             {% if works %}
-
-                <h3 style="margin-top: 100px;">ساعت‌ها</h3>
+                <h2> ساعت‌ها</h2>
                 <div class="works">
                     {% for work in hours %}
                         <div class="work card white-card" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
                              data-project="{{ work.project.id }}">
                             <div class="info">
-                                {% if is_admin %}
-                                    <span class="duration number pull-right">{{ work.employee.last_name }}</span>
-                                {% endif %}
-
-                                <span class="duration number pull-right">{{ work.duration_text }}</span>
+                                <span class="duration number pull-right ">{{ work.duration_text }}</span>
                                 <span class="date number">{{ work.date_text }}</span>
                                 <span class="project label"
                                       style="background-color: {{ work.project.color }}">{{ work.project.title }}</span>
-                                <span class="description">{{ work.description|default_if_none:"" }}</span>
+                                <span class="description">{{ work.description }}</span>
+                                <a href="{% url 'employee-admin' organization.slug work.employee %}"
+                                   class="edit label pull-left">{{ work.employee.last_name|default_if_none:'...' }}</a>
                             </div>
                         </div>
                     {% endfor %}
