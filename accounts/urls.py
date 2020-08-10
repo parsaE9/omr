@@ -8,8 +8,9 @@ from django.contrib.auth.views import (
 from django.urls import path
 
 urlpatterns = [
+
     url(r'^signup/?$', signup, name='signup'),
-    # path('signup', accounts.views.signup, name='signup'),
+    # path('signup', signup, name='signup'),
 
     url(r'^login/?$', email_login, name='login'),
     # path('login/?', accounts.views.email_login, name='login'),

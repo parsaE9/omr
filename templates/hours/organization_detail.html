@@ -36,8 +36,9 @@
                            class="label label-primary"
                            style="color: white">{{ item.employee__last_name|default_if_none:'...' }}</a>
                         {% if is_selected %}
-                            <span class="number">  تعداد روز های غیبت</span>
-                            <span class="number">  تعداد روز های حضور{{ hours.count }}</span>
+                            <span class="number"> تعداد روز های تعطیل {{ off_days }}</span>
+                            <span class="number"> تعداد روز های غیبت {{ miss_days }}</span>
+                            <span class="number"> تعداد روز های حضور {{ hours.count }}</span>
                         {% endif %}
                         <span class="number"> مجموع ساعات{{ item.duration }}</span>
                     </li>
@@ -91,7 +92,7 @@
                 <div class="works">
                     {% for work in hours %}
                         <div class="work card white-card" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
-                             data-project="{{ work.project.id }}">
+                             data-project="{{ work.project.id }}" >
                             <div class="info">
                                 <span class="duration number pull-right ">{{ work.duration_text }}</span>
                                 <span class="date number">{{ work.date_text }}</span>

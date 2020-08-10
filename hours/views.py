@@ -12,7 +12,7 @@ from django.db.models import Sum
 from django.db.models.functions import Trunc
 from django.core.mail import send_mail
 from hours.models import *
-from hours.persian import normalize_digits, persian_numbers
+from hours.persian import normalize_digits, persian_numbers, get_weekday_count, get_days_count
 
 
 class EmployeeHours(DetailView):
@@ -95,6 +95,7 @@ class OrganizationStats(DetailView):
     def get_context_data(self, **kwargs):
         context = super(OrganizationStats, self).get_context_data(**kwargs)
         print("--------------")
+        print(kwargs)
         print("get_context_data POST = {} ".format(self.request.POST))
         print("dictionary is : {}".format(self.my_dictionary))
         # print(self.request.GET)
@@ -114,6 +115,8 @@ class OrganizationStats(DetailView):
             return items
 
         # TODO BEGIN
+        gregorian_date_source = ''
+        gregorian_date_end = ''
 
         if self.my_dictionary.get('date-source') and self.my_dictionary.get('date-end'):
             split_source = self.my_dictionary['date-source'].split('/')
@@ -151,21 +154,30 @@ class OrganizationStats(DetailView):
                     values('employee__last_name', 'employee__username').annotate(duration=Sum('duration')).order_by(
                     'employee'))
 
+            # TODO
+
             context['employee_names'] = context['employees']
             context['is_selected'] = False
             last_name = self.my_dictionary.get('employee_select')
+
             if last_name and last_name != 'همه':
-                # print("in if self.my_dictionary['select'] = {}".format(self.my_dictionary.get('select')))
                 context['works'] = context['works'].filter(employee__last_name=last_name)
                 context['hours'] = context['hours'].filter(employee__last_name=last_name)
-                # context['employees'] = context['employees'].filter(last_name=last_name)
-                # print(context['employees'][0])
                 context['employee_names'] = format_durations(
                     Work.objects.filter(organization=self.object, employee__is_active=True,
                                         employee__last_name=last_name).
                         values('employee__last_name', 'employee__username').annotate(duration=Sum('duration')).order_by(
                         'employee'))
                 context['is_selected'] = True
+                fridays_count = get_weekday_count(gregorian_date_source, gregorian_date_end, 'friday')
+                thursdays_count = get_weekday_count(gregorian_date_source, gregorian_date_end, 'thursday')
+                print(fridays_count)
+                print(thursdays_count)
+                context['off_days'] = fridays_count + thursdays_count
+                all_days_count = get_days_count(gregorian_date_source, gregorian_date_end)
+                context['miss_days'] = all_days_count - context['off_days'] - len(context['hours'])
+
+                # TODO END
 
         context['data'] = context['works'].values('project__title').annotate(date=Trunc('date', 'day'),
                                                                              duration=Sum('duration')).order_by('date')

@@ -11,7 +11,7 @@ urlpatterns = [
 	# url(r'^$', RedirectView.as_view(url='sobhe/'), name='home'),
 	path('', RedirectView.as_view(url='sobhe/'), name='home'),
 	# url(r'^admin/', admin.site.urls),
-	path('admin/', admin.site.urls),
+	path('admin', admin.site.urls),
 	# url(r'^accounts/', include('accounts.urls')),
 	path('accounts/', include('accounts.urls')),
 
