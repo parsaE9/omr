@@ -2,7 +2,7 @@
 
 {% block toplinks %}
 {% for organization in organizations %}
-| <a href="{% url 'employee' organization.slug %}"><span class="glyphicon glyphicon-home"></span> {{ organization }}</a>
+| <a href="{% url 'employee' organization.slug %}"><span class="fa fa-home"></span> {{ organization }}</a>
 {% endfor %}
 {% endblock %}
 

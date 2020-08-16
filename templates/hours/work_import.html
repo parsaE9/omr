@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block toplinks %}
-| <a href="{% url 'employee' organization.slug %}"><span class="glyphicon glyphicon-home"></span> {{ organization }}</a>
-| <a href="{% url 'organization' organization.slug %}"><span class="glyphicon glyphicon-stats"></span> آمار</a>
+| <a href="{% url 'employee' organization.slug %}"><span class="fa fa-home"></span> {{ organization }}</a>
+| <a href="{% url 'organization' organization.slug %}"><span class="fa fa-bar-chart"></span> آمار</a>
 {% endblock %}
 
 

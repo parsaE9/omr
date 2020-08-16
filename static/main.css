@@ -42,11 +42,12 @@ td {
 select.form-control {
   padding: 0px 10px 2px;
 }
-.glyphicon {
-  top: 2px;
-  font-size: 80%;
+.fa {
+    top: 2px;
+    font-size: 95%;
+    margin-top: 5px;
 }
-.btn .glyphicon {
+.btn .fa{
   font-size: 70%;
   top: 2px;
   margin-left: 2px;
