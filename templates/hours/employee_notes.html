@@ -29,7 +29,7 @@
 				{% endfor %}
 			</select>
 			<input maxlength="255" name="content" type="text" value="" class="form-control" placeholder="پیام">
-			<a href="#" class="btn btn-success pull-left submit"><span class="glyphicon glyphicon-ok"></span> ثبت</a>
+			<a href="#" class="btn btn-success float-left submit"><span class="fa fa-check"></span> ثبت</a>
 			<input name="date" type="text" value="{{ today }}" class="form-control number text-center" pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
 		</form>
 	</div>
@@ -37,15 +37,15 @@
 
 	<div class="notes">
 	{% if not notes and not is_admin %}
-		<div class="alert alert-info"><p><span class="glyphicon glyphicon-sunglasses" style="margin-left: 5px"></span> پیامی برای شما ثبت نشده است.</p></div>
+		<div class="alert alert-info"><p class="text-right"><span class="fa fa-eye" style="margin-left: 5px"></span> پیامی برای شما ثبت نشده است.</p></div>
 	{% endif %}
 
 	{% for note in notes %}
 		<div class="note card alert-{{ note.category }}" data-id="{{ note.id }}" data-date="{{ note.date_number }}" data-category="{{ note.category }}" data-content="{{ note.content }}" data-employee="{{ note.employee.id }}">
 			<div class="info">
 				{% if is_admin %}
-				<a href="" class="edit pull-left"><span class="glyphicon glyphicon-pencil"></span></a>
-				<a href="" class="email pull-left"><span class="glyphicon glyphicon-envelope"></span></a>
+				<a href="" class="edit pull-left"><span class="fa fa-pencil"></span></a>
+				<a href="" class="email pull-left"><span class="fa fa-envelope"></span></a>
 				<span class="employee">{{ note.employee.last_name|default_if_none:'...' }}</span>
 				{% endif %}
 				<div class="content">{{ note.content_html|safe }}</div>

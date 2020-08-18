@@ -13,10 +13,10 @@
 
 
 {% block content %}
-
     <div id="organization" class="container">
-        <h2 style="font-family:IRMitra,serif; margin-top: 70px;" class="float-right">پروژه‌ها</h2>
+    <br>
 
+        <h2 style="font-family:IRMitra,serif;" class="float-right">پروژه‌ها</h2>
         <ul class="hours float-right">
             {% for item in works %}
                 <li>
@@ -28,12 +28,12 @@
         </ul>
 
         {% if is_admin %}
-            <h2>افراد</h2>
-            <ul class="hours">
+            <h2 class="float-right">افراد</h2>
+            <ul class="hours float-right">
                 {% for item in employee_names %}
-                    <li class="nav-item">
+                    <li class="nav nav-item">
                         <a href="{% url 'employee-admin' organization.slug item.employee__username %}"
-                           class="label label-primary"
+                           class="badge badge-primary"
                            style="color: white">{{ item.employee__last_name|default_if_none:'...' }}</a>
                         {% if is_selected %}
                             <span class="number"> تعداد روز های تعطیل {{ off_days }}</span>
@@ -46,14 +46,14 @@
             </ul>
         {% endif %}
 
-
-        <h2>گذشته</h2>
+        <h2 class="float-right">گذشته</h2>
         <div id="chart" dir="ltr" style="height: 400px;">
             <svg></svg>
         </div>
+        </div>
+        <div class="container">
         <div class="row">
-            <div id="new-work" class="card white-card col-xs-12 " style=" margin-top: 20px;">
-
+            <div id="new-work" class="card white-card col-12 " style=" margin-top: 20px;">
                 <form action="" method="POST" class="work-form form-inline">
                     {% csrf_token %}
                     <label style="margin: 0 10px;">از تاریخ</label>
@@ -80,37 +80,33 @@
                             </select>
                         </label>
                     {% endif %}
-                    <input type="submit" value="ثبت" class="btn btn-success pull-left submit">
+                    <input type="submit" value="ثبت" class="btn btn-success float-left submit">
+
                 </form>
 
             </div>
-            <br>
-            <br>
-            <br>
             {% if works %}
-                <h2> ساعت‌ها</h2>
-                <div class="works">
+                <h2 style="margin-top: 25px;"> ساعت‌ها</h2>
+                <div class="works col-12">
                     {% for work in hours %}
                         <div class="work card white-card" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
                              data-project="{{ work.project.id }}">
                             <div class="info">
-                                <span class="duration number pull-right ">{{ work.duration_text }}</span>
-                                <span class="date number">{{ work.date_text }}</span>
-                                <span class="project label"
+                                <span class="duration number float-right ">{{ work.duration_text }}</span>
+                                <span class="date number float-right">{{ work.date_text }}</span>
+                                <span class="project label float-right"
                                       style="background-color: {{ work.project.color }}">{{ work.project.title }}</span>
-                                <span class="description">{{ work.description }}</span>
+                                <span class="description float-right">{{ work.description }}</span>
                                 <a href="{% url 'employee-admin' organization.slug work.employee %}"
-                                   class="edit label pull-left">{{ work.employee.last_name|default_if_none:'...' }}</a>
+                                   class="edit label float-left">{{ work.employee.last_name|default_if_none:'...' }}</a>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
             {% endif %}
 
-
         </div>
-
-    </div>
+        </div>
 
     <style>
         .tick line {

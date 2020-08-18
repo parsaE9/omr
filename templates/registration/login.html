@@ -9,9 +9,9 @@
 <div class="small-container">
 	<form method="post">
 		{% csrf_token %}
-		<p><label>رایانامه</label>{{ form.email|attr:"dir:ltr"|attr:"class:form-control" }}</p>
-		<p><label>گذرواژه</label><input class="form-control" dir="ltr" id="id_password" name="password" type="password"></p>
-		<p><input class="btn btn-primary" type="submit" value="ورود"> <a class="btn btn-link" href="{% url 'password_reset' %}">گذرواژه را فراموش کرده‌اید؟</a> <a class="btn btn-link pull-left" href="{% url 'signup' %}/?next={{ next }}">ثبت نام</a></p>
+		<p><label class="float-right">رایانامه</label>{{ form.email|attr:"dir:ltr"|attr:"class:form-control" }}</p>
+		<p><label class="float-right">گذرواژه</label><input class="form-control" dir="ltr" id="id_password" name="password" type="password"></p>
+		<p><input class="btn btn-primary float-right" type="submit" value="ورود"> <a class="btn btn-link" href="{% url 'password_reset' %}">گذرواژه را فراموش کرده‌اید؟</a> <a class="btn btn-link float-left" href="{% url 'signup' %}/?next={{ next }}">ثبت نام</a></p>
 	</form>
 
 	{% if form.errors %}

@@ -9,9 +9,9 @@
 
 {% block content %}
 <div class="small-container">
-	<h2>{{ object.last_name }}</h2>
-	<p>{{ object.email }}</p>
-	<a href="{% url 'password_change' %}">تغییر گذرواژه</a>
+	<h2 class="float-right">{{ object.last_name }}</h2>
+	<p class="float-right">{{ object.email }}</p>
+	<a class="float-right" href="{% url 'password_change' %}">تغییر گذرواژه</a>
 
 </div>
 {% endblock %}

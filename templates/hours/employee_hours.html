@@ -14,12 +14,9 @@
 
 {% block content %}
 
-    <style type="text/css">
-    </style>
-
     <div class="container">
         <div class="row">
-            <div id="new-work" class="card white-card col-xs-12" style="margin: 80px 0 60px;">
+            <div id="new-work" class="card white-card col-12" style="margin: 80px 0 60px;">
                 <form action="{% url 'work-create' %}?next={{ next }}" method="post" class="work-form form-inline">
                     <input type="hidden" name="employee" value="{{ object.id }}">
                     <input type="hidden" name="organization" value="{{ organization.id }}">
@@ -37,7 +34,7 @@
                     </select>
                     <input maxlength="255" name="description" type="text" value="" class="form-control"
                            placeholder="تازه چه کرده‌اید؟">
-                    <a href="#" class="btn btn-success pull-left submit"><span class="glyphicon glyphicon-ok"></span>
+                    <a href="#" class="btn btn-success float-left submit"><span class="fa fa-check"></span>
                         ثبت</a>
                 </form>
             </div>
@@ -45,17 +42,17 @@
             {% if works.count %}
                 <h3>ساعت‌ها</h3>
             {% endif %}
-            <div class="works">
+            <div class="works col-12">
                 {% for work in works %}
                     <div class="work card white-card" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
                          data-project="{{ work.project.id }}">
                         <div class="info">
-                            <span class="duration number pull-right">{{ work.duration_text }}</span>
-                            <span class="date number">{{ work.date_text }}</span>
-                            <span class="project label"
+                            <span class="duration number float-right">{{ work.duration_text }}</span>
+                            <span class="date number float-right">{{ work.date_text }}</span>
+                            <span class="project label float-right"
                                   style="background-color: {{ work.project.color }}">{{ work.project.title }}</span>
-                            <span class="description">{{ work.description|default_if_none:"" }}</span>
-                            <a href="" class="edit pull-left"><span class="glyphicon glyphicon-pencil"></span></a>
+                            <span class="description float-right">{{ work.description|default_if_none:"" }}</span>
+                            <a href="" class="edit float-left"><span class="fa fa-pencil"></span></a>
                         </div>
                     </div>
                 {% endfor %}
