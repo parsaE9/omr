@@ -28,7 +28,7 @@ def get_weekday_count(start, end, weekday):
     for i in range((end_date - start_date).days):
         day = calendar.day_name[(start_date + datetime.timedelta(days=i + 1)).weekday()]
         if day.lower() == weekday.lower():
-            count = count + 1
+            count += 1
     return count
 
 

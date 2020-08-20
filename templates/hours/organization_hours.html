@@ -20,11 +20,11 @@
                         <div class="info">
                             <span class="duration number float-right">{{ work.duration_text }}</span>
                             <span class="date number float-right">{{ work.date_text }}</span>
-                            <span class="project label float-right"
+                            <span class="project badge float-right"
                                   style="background-color: {{ work.project.color }}">{{ work.project.title }}</span>
                             <span class="description float-right">{{ work.description }}</span>
                             <a href="{% url 'employee-admin' organization.slug work.employee %}"
-                               class="edit label float-left">{{ work.employee.last_name|default_if_none:'...' }}</a>
+                               class="edit badge float-left">{{ work.employee.last_name|default_if_none:'...' }}</a>
                         </div>
                     </div>
                 {% endfor %}

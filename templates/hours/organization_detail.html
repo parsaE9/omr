@@ -14,27 +14,33 @@
 
 {% block content %}
     <div id="organization" class="container">
-    <br>
-
+        <br>
+        <br>
         <h2 style="font-family:IRMitra,serif;" class="float-right">پروژه‌ها</h2>
+        <br>
+        <br>
         <ul class="hours float-right">
             {% for item in works %}
                 <li>
-                    <span class="label"
+                    <span class="badge"
                           style="background-color: {{ item.project__color|default_if_none:'#bdbdbd' }}">{{ item.project__title|default_if_none:'...' }}</span>
                     <span class="number">{{ item.duration }}</span>
                 </li>
             {% endfor %}
         </ul>
-
+        <br>
+        <br>
+        <br>
+        <br>
         {% if is_admin %}
             <h2 class="float-right">افراد</h2>
-            <ul class="hours float-right">
+            <br>
+            <br>
+            <ul class="hours float-right nav">
                 {% for item in employee_names %}
-                    <li class="nav nav-item">
+                    <li class="nav-item">
                         <a href="{% url 'employee-admin' organization.slug item.employee__username %}"
-                           class="badge badge-primary"
-                           style="color: white">{{ item.employee__last_name|default_if_none:'...' }}</a>
+                           class="badge badge-primary">{{ item.employee__last_name|default_if_none:'...' }}</a>
                         {% if is_selected %}
                             <span class="number"> تعداد روز های تعطیل {{ off_days }}</span>
                             <span class="number"> تعداد روز های غیبت {{ miss_days }}</span>
@@ -45,13 +51,15 @@
                 {% endfor %}
             </ul>
         {% endif %}
-
+        <br>
+        <br>
+        <br>
         <h2 class="float-right">گذشته</h2>
         <div id="chart" dir="ltr" style="height: 400px;">
             <svg></svg>
         </div>
-        </div>
-        <div class="container">
+        <br>
+        <br>
         <div class="row">
             <div id="new-work" class="card white-card col-12 " style=" margin-top: 20px;">
                 <form action="" method="POST" class="work-form form-inline">
@@ -70,7 +78,7 @@
                     </label>
                     {% if is_admin %}
                         <label>
-                            <select class="project label" name="employee_select" style="margin-right: 20px;">
+                            <select class="project badge" name="employee_select" style="margin-right: 20px;">
                                 <option>همه</option>
                                 {% for item in employees %}
                                     <option>
@@ -80,7 +88,7 @@
                             </select>
                         </label>
                     {% endif %}
-                    <input type="submit" value="ثبت" class="btn btn-success float-left submit">
+                    <input type="submit" value="ثبت" class="btn btn-success float-left submit" >
 
                 </form>
 
@@ -94,19 +102,21 @@
                             <div class="info">
                                 <span class="duration number float-right ">{{ work.duration_text }}</span>
                                 <span class="date number float-right">{{ work.date_text }}</span>
-                                <span class="project label float-right"
-                                      style="background-color: {{ work.project.color }}">{{ work.project.title }}</span>
+                                <span class="project badge float-right"
+                                      style="background-color: {{ work.project.color }};">{{ work.project.title }}</span>
                                 <span class="description float-right">{{ work.description }}</span>
                                 <a href="{% url 'employee-admin' organization.slug work.employee %}"
-                                   class="edit label float-left">{{ work.employee.last_name|default_if_none:'...' }}</a>
+                                   class="edit  badge-light float-left">{{ work.employee.last_name|default_if_none:'...' }}</a>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
             {% endif %}
-
         </div>
-        </div>
+        {#        <br>#}
+        {#        <hr>#}
+        {#        <p class="float-right"></p>#}
+    </div>
 
     <style>
         .tick line {

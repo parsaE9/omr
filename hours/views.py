@@ -183,7 +183,6 @@ class OrganizationStats(DetailView):
                                                                              duration=Sum('duration')).order_by('date')
         context['works'] = context['works'].values('project__title', 'project__color').annotate(
             duration=Sum('duration')).order_by('project')
-
         chart_data = {}
         for item in context['data']:
             jalali = jalali_date(item['date']).strftime('%b %y')
@@ -213,9 +212,6 @@ class OrganizationStats(DetailView):
         self.my_dictionary['date-end'] = self.request.POST.get('date-end')
         self.my_dictionary['employee_select'] = self.request.POST['employee_select']
         # if self.my_dictionary.get('employee_select') and self.my_dictionary.get('employee_select') != 'همه':
-
-
-
         print("my dictionary = {}".format(self.my_dictionary))
         print("POST = {}".format(self.request.POST))
         print("self.my_dictionary['employee_select'] = {}".format(self.my_dictionary.get('employee_select')))
