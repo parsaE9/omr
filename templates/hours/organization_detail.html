@@ -31,7 +31,6 @@
         <br>
         <br>
         <br>
-        <br>
         {% if is_admin %}
             <h2 class="float-right">افراد</h2>
             <br>
@@ -61,43 +60,44 @@
         <br>
         <br>
         <div class="row">
-            <div id="new-work" class="card white-card col-12 table-responsive" style=" margin-top: 20px;">
-                <form action="" method="POST" class="work-form form-inline">
-                    {% csrf_token %}
-                    <label style="margin: 0 10px;">از تاریخ</label>
-                    <label>
-                        <input name="date-source" style="width: 120px;" type="text" value="{{ date_source }}"
-                               class="form-control number text-center"
-                               pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
-                    </label>
-                    <label style="margin: 0 10px;">تا</label>
-                    <label>
-                        <input name="date-end" style="width: 120px" type="text" value="{{ date_end }}" class="form-control
-                               number text-center"
-                               pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
-                    </label>
-                    {% if is_admin %}
+            <div class="works col-12">
+                <div id="new-work" class="work card white-card col-12 table-responsive" style=" margin-top: 20px;">
+                    <form action="" method="POST" class="work-form form-inline">
+                        {% csrf_token %}
+                        <label style="margin: 0 10px;">از تاریخ</label>
                         <label>
-                            <select class="project badge" name="employee_select" style="margin-right: 20px;">
-                                <option>همه</option>
-                                {% for item in employees %}
-                                    <option>
-                                        {{ item.employee__last_name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
+                            <input name="date-source" style="width: 120px;" type="text" value="{{ date_source }}"
+                                   class="form-control number text-center"
+                                   pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
                         </label>
-                    {% endif %}
-                    <input type="submit" value="ثبت" class="btn btn-success float-left submit" >
-
-                </form>
-
+                        <label style="margin: 0 10px;">تا</label>
+                        <label>
+                            <input name="date-end" style="width: 120px" type="text" value="{{ date_end }}" class="form-control
+                               number text-center"
+                                   pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
+                        </label>
+                        {% if is_admin %}
+                            <label>
+                                <select class="project badge" name="employee_select" style="margin-right: 20px;">
+                                    <option>همه</option>
+                                    {% for item in employees %}
+                                        <option>
+                                            {{ item.employee__last_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        {% endif %}
+                        <input type="submit" value="ثبت" class="btn btn-success float-left submit">
+                    </form>
+                </div>
             </div>
             {% if works %}
                 <h2 style="margin-top: 25px;"> ساعت‌ها</h2>
                 <div class="works col-12">
                     {% for work in hours %}
-                        <div class="work card white-card table-responsive" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
+                        <div class="work card white-card table-responsive" data-id="{{ work.id }}"
+                             data-date="{{ work.date_number }}"
                              data-project="{{ work.project.id }}">
                             <div class="info">
                                 <span class="duration number float-right ">{{ work.duration_text }}</span>
