@@ -102,3 +102,11 @@ class Note(models.Model):
 
     def get_absolute_url(self):
         return reverse('employee-notes', args=[self.organization.slug])
+
+
+class Holidays(models.Model):
+    date = models.DateField()
+    description = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.date

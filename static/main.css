@@ -73,7 +73,7 @@ select.form-control {
 /* footer */
 html,
 body {
-    height: 100%;
+    height: 80%;
 }
 
 .wrap {
@@ -84,7 +84,13 @@ body {
 
 .footer,
 .push {
-    height: 60px;
+    height: 40px;
+}
+
+.footer {
+    /*position: fixed;*/
+    /*bottom: 20px;*/
+    /*width: 100%;*/
 }
 
 .footer hr {
@@ -326,3 +332,10 @@ body {
     color: white;
 }
 
+.table-responsive::-webkit-scrollbar {
+    display: none;
+}
+
+#footer_adjustment {
+    min-height: 81vh;
+}

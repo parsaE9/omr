@@ -7,7 +7,7 @@
 
 
 {% block content %}
-<div class="container" style="margin-top: 80px;">
+<div class="container" style="margin-top: 80px;" id="footer_adjustment">
 	<p>لطفا ردیف‌های ساعت را با قالب نمونه وارد کنید:</p>
 	<form action="{% url 'organization-import' organization.slug %}" method="post" dir="ltr">
 		<textarea class="form-control" name="items" style="height: 400px; margin-bottom: 10px; font-size: 95%;" placeholder="email1,2017-01-01,1:00:00,project1,description1

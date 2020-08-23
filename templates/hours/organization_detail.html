@@ -13,7 +13,7 @@
 
 
 {% block content %}
-    <div id="organization" class="container">
+    <div id="organization" class="container" style="min-height: 80vh;">
         <br>
         <br>
         <h2 style="font-family:IRMitra,serif;" class="float-right">پروژه‌ها</h2>
@@ -61,7 +61,7 @@
         <br>
         <br>
         <div class="row">
-            <div id="new-work" class="card white-card col-12 " style=" margin-top: 20px;">
+            <div id="new-work" class="card white-card col-12 table-responsive" style=" margin-top: 20px;">
                 <form action="" method="POST" class="work-form form-inline">
                     {% csrf_token %}
                     <label style="margin: 0 10px;">از تاریخ</label>
@@ -97,7 +97,7 @@
                 <h2 style="margin-top: 25px;"> ساعت‌ها</h2>
                 <div class="works col-12">
                     {% for work in hours %}
-                        <div class="work card white-card" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
+                        <div class="work card white-card table-responsive" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
                              data-project="{{ work.project.id }}">
                             <div class="info">
                                 <span class="duration number float-right ">{{ work.duration_text }}</span>
@@ -113,16 +113,12 @@
                 </div>
             {% endif %}
         </div>
-        {#        <br>#}
-        {#        <hr>#}
-        {#        <p class="float-right"></p>#}
     </div>
 
     <style>
         .tick line {
             display: none;
         }
-
     </style>
 
 {% endblock content %}

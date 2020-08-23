@@ -6,7 +6,7 @@
 
 
 {% block content %}
-<div class="small-container" style="margin-top: 150px">
+<div class="small-container" style="margin-top: 150px; min-height: 65vh;">
 	<form method="post">
 		{% csrf_token %}
 		<p><label>نام</label>{{ form.last_name|attr:"class:form-control"|attr:"placeholder:مصطفی چمران" }}{{ form.errors.last_name }}</p>
