@@ -1,8 +1,10 @@
 import jdatetime
+from datetime import datetime
 from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.dateparse import parse_duration
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
 from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
@@ -98,9 +100,6 @@ class OrganizationStats(DetailView):
         print(kwargs)
         print("get_context_data POST = {} ".format(self.request.POST))
         print("dictionary is : {}".format(self.my_dictionary))
-        # print(self.request.GET)
-        # print(request.GET['date-source'])
-        # print(self.request.user)
 
         context['today'] = jdatetime.date.today().strftime('%Y/%m/%d')
         if self.request.user not in self.object.employees.all():
@@ -134,7 +133,6 @@ class OrganizationStats(DetailView):
                 'project').order_by('-date', '-id')
             context['date_source'] = self.my_dictionary['date-source']
             context['date_end'] = self.my_dictionary['date-end']
-            # context['select_'] = self.my_dictionary['employee_select']
 
         else:
             context['works'] = Work.objects.filter(organization=self.object)
@@ -165,18 +163,18 @@ class OrganizationStats(DetailView):
                 context['hours'] = context['hours'].filter(employee__last_name=last_name)
                 context['employee_names'] = format_durations(
                     Work.objects.filter(organization=self.object, employee__is_active=True,
-                                        employee__last_name=last_name).
+                                        employee__last_name=last_name, date__range=[gregorian_date_source,
+                                                                                    gregorian_date_end]).
                         values('employee__last_name', 'employee__username').annotate(duration=Sum('duration')).order_by(
                         'employee'))
                 context['is_selected'] = True
                 fridays_count = get_weekday_count(gregorian_date_source, gregorian_date_end, 'friday')
                 thursdays_count = get_weekday_count(gregorian_date_source, gregorian_date_end, 'thursday')
-                print(fridays_count)
-                print(thursdays_count)
-                context['off_days'] = fridays_count + thursdays_count
+                context['weekends'] = fridays_count + thursdays_count
                 all_days_count = get_days_count(gregorian_date_source, gregorian_date_end)
-                context['miss_days'] = all_days_count - context['off_days'] - len(context['hours'])
-
+                context['holidays'] = Holiday.objects.filter(date__range=[gregorian_date_source, gregorian_date_end])
+                context['total_off_days'] = context['weekends'] + len(context['holidays'].filter(is_weekend=False))
+                context['miss_days'] = all_days_count - context['total_off_days'] - len(context['hours'])
                 # TODO END
 
         context['data'] = context['works'].values('project__title').annotate(date=Trunc('date', 'day'),
@@ -210,7 +208,7 @@ class OrganizationStats(DetailView):
         print(f"post POST = {self.request.POST}")
         self.my_dictionary['date-source'] = self.request.POST.get('date-source')
         self.my_dictionary['date-end'] = self.request.POST.get('date-end')
-        self.my_dictionary['employee_select'] = self.request.POST['employee_select']
+        self.my_dictionary['employee_select'] = self.request.POST.get('employee_select')
         # if self.my_dictionary.get('employee_select') and self.my_dictionary.get('employee_select') != 'همه':
         print("my dictionary = {}".format(self.my_dictionary))
         print("POST = {}".format(self.request.POST))
@@ -229,6 +227,27 @@ class UserDetail(DetailView):
         context = super(UserDetail, self).get_context_data(**kwargs)
         context['organizations'] = self.object.organization_set.all()
         return context
+
+
+class CalendarView(DetailView):
+    model = Holiday
+    template_name = 'hours/calendar.html'
+
+    def get_object(self, **kwargs):
+        return Holiday.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(CalendarView, self).get_context_data(**kwargs)
+        context['today'] = datetime.today().strftime('%Y-%m-%d')
+        return context
+
+    def post(self, request, *args, **kwargs):
+        date = self.request.POST['gregorian-date']
+        if get_weekday_count(date, date, 'friday') or get_weekday_count(date, date, 'thursday'):
+            Holiday(date=date, description=self.request.POST['description'], is_weekend=True).save()
+        else:
+            Holiday(date=date, description=self.request.POST['description']).save()
+        return HttpResponseRedirect('./calendar')
 
 
 class WorkForm(forms.ModelForm):

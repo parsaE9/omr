@@ -16,37 +16,39 @@
 
     <div class="container" style="min-height: 85vh;">
         <div class="row">
-        <div class="works col-12">
-            <div id="new-work" class="work card white-card col-12" style="margin: 80px 0 60px;">
-                <form action="{% url 'work-create' %}?next={{ next }}" method="post" class="work-form form-inline">
-                    <input type="hidden" name="employee" value="{{ object.id }}">
-                    <input type="hidden" name="organization" value="{{ organization.id }}">
+            <div class="works col-12">
+                <div id="new-work" class="work card white-card table-responsive" style="margin: 80px 0 40px">
+                    <form action="{% url 'work-create' %}?next={{ next }}" method="post" class="work-form form-inline">
+                        <input type="hidden" name="employee" value="{{ object.id }}">
+                        <input type="hidden" name="organization" value="{{ organization.id }}">
 
-                    <input name="duration" type="text" value="00:00" class="form-control number text-center"
-                           pattern="[0-1۰-۱]?[0-9۰-۹]:[0-5۰-۵][0-9۰-۹]" required>
-                    <input name="date" type="text" value="{{ today }}" class="form-control number text-center"
-                           pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
-                    <select name="project" class="form-control">
-                        {% for project in organization.projects %}
-                            <option value="{{ project.id }}"
-                                    style="background-color: {{ project.color }}">{{ project.title }}</option>
-                        {% endfor %}
-                        <option value="" style="background-color: #efefef">...</option>
-                    </select>
-                    <input maxlength="255" name="description" type="text" value="" class="form-control" style="margin: 0 10px;"
-                           placeholder="تازه چه کرده‌اید؟">
-                    <a href="#" class="btn btn-success float-left submit"><span class="fa fa-check"></span>
-                        ثبت</a>
-                </form>
+                        <input name="duration" type="text" value="00:00" class="form-control number text-center"
+                               pattern="[0-1۰-۱]?[0-9۰-۹]:[0-5۰-۵][0-9۰-۹]" required>
+                        <input name="date" type="text" value="{{ today }}" class="form-control number text-center"
+                               pattern="[1۱][34۳۴][0-9۰-۹][0-9۰-۹]/[0-1۰-۱]?[0-9۰-۹]/[0-3۰-۳]?[0-9۰-۹]" required>
+                        <select name="project" class="form-control">
+                            {% for project in organization.projects %}
+                                <option value="{{ project.id }}"
+                                        style="background-color: {{ project.color }}">{{ project.title }}</option>
+                            {% endfor %}
+                            <option value="" style="background-color: #efefef">...</option>
+                        </select>
+                        <input maxlength="255" name="description" type="text" value="" class="form-control"
+                               style="margin: 0 10px;"
+                               placeholder="تازه چه کرده‌اید؟">
+                        <a href="#" class="btn btn-success float-left submit"><span class="fa fa-check"></span>
+                            ثبت</a>
+                    </form>
+                </div>
             </div>
-        </div>
 
             {% if works.count %}
                 <h3>ساعت‌ها</h3>
             {% endif %}
             <div class="works col-12">
                 {% for work in works %}
-                    <div class="work card white-card" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
+                    <div id="works" class="work card white-card table-responsive" data-id="{{ work.id }}"
+                         data-date="{{ work.date_number }}"
                          data-project="{{ work.project.id }}">
                         <div class="info">
                             <span class="duration number float-right">{{ work.duration_text }}</span>
@@ -67,7 +69,6 @@
 
 {% block script %}
     <script type="text/javascript">
-
         $('a.edit').click(function () {
             $('.info').show();
             $('.works form').hide();

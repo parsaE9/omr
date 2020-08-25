@@ -4,6 +4,9 @@
     {% for organization in organizations %}
         | <a href="{% url 'employee' organization.slug %}"><span class="fa fa-home"></span> {{ organization }}</a>
     {% endfor %}
+    {% if user.is_superuser%}
+        | <a href="{% url 'calendar' %}"><span class="fa fa-calendar"></span> تقویم</a>
+    {% endif %}
 {% endblock %}
 
 

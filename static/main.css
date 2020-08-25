@@ -336,6 +336,11 @@ body {
     display: none;
 }
 
-#footer_adjustment {
-    min-height: 81vh;
+span.description {
+    max-width: 60%;
+    margin-right: -5px;
+}
+
+#new-work {
+    margin-top: 20px;
 }

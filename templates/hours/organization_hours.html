@@ -15,7 +15,7 @@
             {% endif %}
             <div class="works col-12">
                 {% for work in works %}
-                    <div class="work card white-card" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
+                    <div class="work card white-card table-responsive" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
                          data-project="{{ work.project.id }}">
                         <div class="info">
                             <span class="duration number float-right">{{ work.duration_text }}</span>

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block links %}
+    <link rel="stylesheet" href="/static/calendar/calendar.css?{% now "U" %}">
+    <script src="//code.jquery.com/jquery.min.js"></script>
+        <script src="/static/calendar/calendar.js?{% now "U" %}"></script>
+{% endblock %}
+
+{% block toplinks %}
+    {% for organization in organizations %}
+        | <a href="{% url 'employee' organization.slug %}"><span class="fa fa-home"></span> {{ organization }}</a>
+    {% endfor %}
+    {% if user.is_superuser %}
+        | <a href="{% url 'calendar' %}"><span class="fa fa-calendar"></span> تقویم</a>
+    {% endif %}
+{% endblock %}
+
+
+{% block content %}
+
+    <div id="calendar" class="container number">
+        <div class="calender"></div>
+        <form action="" method="POST">
+            {% csrf_token %}
+            <input type="text" id="calenderSelector" name="jalali-date">
+            <input type="text" id="calenderSecondarySelector" name="gregorian-date" hidden>
+            <input type="text" placeholder="توضیحات" name="description" style="width: 40vmin">
+            <input type="submit" value="ثبت" class="btn btn-success float-left submit">
+        </form>
+        <br>
+        <br>
+
+{#        <p>{{ object }}</p>#}
+{#        <p>{{ today }}</p>#}
+    </div>
+    <script>
+    $(".calender").datepicker({
+    altField: "#calenderSelector",
+    altSecondaryField: "#calenderSecondarySelector",
+    date: "{{ today }}",
+});
+    </script>
+{% endblock %}

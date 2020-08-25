@@ -9,10 +9,10 @@
 <div class="small-container" style="margin-top: 150px; min-height: 65vh;">
 	<form method="post">
 		{% csrf_token %}
-		<p><label>نام</label>{{ form.last_name|attr:"class:form-control"|attr:"placeholder:مصطفی چمران" }}{{ form.errors.last_name }}</p>
-		<p><label>رایانامه</label>{{ form.email|attr:"dir:ltr"|attr:"class:form-control"|attr:"placeholder:mostafa@sobhe.ir" }}{{ form.errors.email }}</p>
-		<p><label>گذرواژه</label><input class="form-control" dir="ltr" id="id_password" name="password" type="password" required>{{ form.errors.password }}</p>
-		<p><input class="btn btn-primary" type="submit" value="ثبت نام"></p>
+		<p><label class="float-right">نام</label>{{ form.last_name|attr:"class:form-control"|attr:"placeholder:مصطفی چمران" }}{{ form.errors.last_name }}</p>
+		<p><label class="float-right">رایانامه</label>{{ form.email|attr:"dir:ltr"|attr:"class:form-control"|attr:"placeholder:mostafa@sobhe.ir" }}{{ form.errors.email }}</p>
+		<p><label class="float-right">گذرواژه</label><input class="form-control" dir="ltr" id="id_password" name="password" type="password" required>{{ form.errors.password }}</p>
+		<p><input class="btn btn-primary float-right" type="submit" value="ثبت نام"></p>
 	</form>
 </div>
 {% endblock content %}

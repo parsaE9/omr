@@ -104,9 +104,19 @@ class Note(models.Model):
         return reverse('employee-notes', args=[self.organization.slug])
 
 
-class Holidays(models.Model):
-    date = models.DateField()
-    description = models.CharField(max_length=255)
+class Holiday(models.Model):
+    class Meta:
+        ordering = ['-date']
+
+    date = models.DateField(primary_key=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    is_weekend = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.date
+        if self.description:
+            return str(self.date) + ' : ' + self.description
+        else:
+            return str(self.date)
+
+    def get_absolute_url(self):
+        return reverse('calendar')
