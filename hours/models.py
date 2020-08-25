@@ -117,6 +117,3 @@ class Holiday(models.Model):
             return str(self.date) + ' : ' + self.description
         else:
             return str(self.date)
-
-    def get_absolute_url(self):
-        return reverse('calendar')
