@@ -9,11 +9,11 @@ input {
     margin: 10px 0 0 10px;
     box-sizing: border-box;
     font-family: inherit;
-    padding: 10px 5px;
-    border: 1px solid #2b2b2b;
-    border-radius: 3px;
-    background: #1f1f1f;
-    color: #eee;
+    padding: 10px 15px;
+    border: 1px solid #fff;
+    border-radius: 6px;
+    background: #fff;
+    color: #333;
     font-size: 20px;
     width: 20vmin;
     height: 35px;
@@ -89,6 +89,10 @@ input {
 .datepicker-jalali .datepicker-days .day:hover, .datepicker-jalali .datepicker-month .month:hover, .datepicker-jalali .datepicker-years .year:hover {
     background: #d7d7d7;
 }
+
+/*.datepicker-jalali .datepicker-days .day {*/
+    /*background: red;*/
+/*}*/
 
 .datepicker-jalali .datepicker-days .day.today, .datepicker-jalali .datepicker-month .month.this, .datepicker-jalali .datepicker-years .year.this {
     background: #0ac5ff;

@@ -16,8 +16,8 @@
 
     <div class="container" style="min-height: 85vh;">
         <div class="row">
-            <div class="works col-12">
-                <div id="new-work" class="work card white-card table-responsive" style="margin: 80px 0 40px">
+            <div class="col-12">
+                <div id="new-work" class="work card white-card col-12 table-responsive" style="margin: 80px 0 60px;">
                     <form action="{% url 'work-create' %}?next={{ next }}" method="post" class="work-form form-inline">
                         <input type="hidden" name="employee" value="{{ object.id }}">
                         <input type="hidden" name="organization" value="{{ organization.id }}">
@@ -42,13 +42,13 @@
                 </div>
             </div>
 
+
             {% if works.count %}
                 <h3>ساعت‌ها</h3>
             {% endif %}
             <div class="works col-12">
                 {% for work in works %}
-                    <div id="works" class="work card white-card table-responsive" data-id="{{ work.id }}"
-                         data-date="{{ work.date_number }}"
+                    <div class="work card white-card table-responsive" data-id="{{ work.id }}" data-date="{{ work.date_number }}"
                          data-project="{{ work.project.id }}">
                         <div class="info">
                             <span class="duration number float-right">{{ work.duration_text }}</span>
@@ -64,6 +64,8 @@
 
         </div>
     </div>
+
+
 {% endblock %}
 
 

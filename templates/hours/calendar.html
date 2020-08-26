@@ -3,7 +3,7 @@
 {% block links %}
     <link rel="stylesheet" href="/static/calendar/calendar.css?{% now "U" %}">
     <script src="//code.jquery.com/jquery.min.js"></script>
-        <script src="/static/calendar/calendar.js?{% now "U" %}"></script>
+    <script src="/static/calendar/calendar.js?{% now "U" %}"></script>
 {% endblock %}
 
 {% block toplinks %}
@@ -29,15 +29,35 @@
         </form>
         <br>
         <br>
-
-{#        <p>{{ object }}</p>#}
-{#        <p>{{ today }}</p>#}
+        {% for item in object %}
+            <p>{{ item }}</p>
+        {% endfor %}
+        <p>{{ today }}</p>
     </div>
     <script>
-    $(".calender").datepicker({
-    altField: "#calenderSelector",
-    altSecondaryField: "#calenderSecondarySelector",
-    date: "{{ today }}",
-});
+
+
+        $(".calender").datepicker({
+            altField: "#calenderSelector",
+            altSecondaryField: "#calenderSecondarySelector",
+            date: "{{ today }}",
+        });
+
+        var a = document.querySelectorAll('.day');
+        for (var i = 0; i < a.length; i++){
+            a[i].addEventListener('click', test, false);
+        }
+
+        function test() {
+            console.log("hiiii");
+            var g_date = document.getElementById('calenderSecondarySelector');
+            console.log(g_date.value);
+            if ("{{ object }}".indexOf(g_date.value) >= 0){
+                console.log('&&&&&');
+            }
+            console.log("{{ object }}");
+        }
+
+
     </script>
 {% endblock %}

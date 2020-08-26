@@ -41,7 +41,7 @@
                         <a href="{% url 'employee-admin' organization.slug item.employee__username %}"
                            class="badge badge-primary">{{ item.employee__last_name|default_if_none:'...' }}</a>
                         {% if is_selected %}
-                            <span class="number"> مجموع تعطیلات {{ holidays.count }}</span>
+                            <span class="number"> مجموع تعطیلات {{ total_off_days }}</span>
                             <span class="number"> تعطیلات رسمی {{ holidays.count }}</span>
                             <span class="number"> تعطیلات آخر هفته {{ weekends }}</span>
                             <span class="number"> تعداد روز های غیبت {{ miss_days }}</span>

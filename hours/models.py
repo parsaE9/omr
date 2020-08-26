@@ -108,7 +108,7 @@ class Holiday(models.Model):
     class Meta:
         ordering = ['-date']
 
-    date = models.DateField(primary_key=True)
+    date = models.DateField(unique=True, null=True)
     description = models.CharField(max_length=255, null=True, blank=True)
     is_weekend = models.BooleanField(default=False)
 

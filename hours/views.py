@@ -9,7 +9,7 @@ from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.db.models import Sum
 from django.db.models.functions import Trunc
 from django.core.mail import send_mail
@@ -174,7 +174,7 @@ class OrganizationStats(DetailView):
                 all_days_count = get_days_count(gregorian_date_source, gregorian_date_end)
                 context['holidays'] = Holiday.objects.filter(date__range=[gregorian_date_source, gregorian_date_end])
                 context['total_off_days'] = context['weekends'] + len(context['holidays'].filter(is_weekend=False))
-                context['miss_days'] = all_days_count - context['total_off_days'] - len(context['hours'])
+                context['miss_days'] = all_days_count - context['total_off_days'] - len(context['hours']) + 1
                 # TODO END
 
         context['data'] = context['works'].values('project__title').annotate(date=Trunc('date', 'day'),
@@ -243,11 +243,17 @@ class CalendarView(DetailView):
 
     def post(self, request, *args, **kwargs):
         date = self.request.POST['gregorian-date']
+        print(date)
+        is_weekend = False
         if get_weekday_count(date, date, 'friday') or get_weekday_count(date, date, 'thursday'):
-            Holiday(date=date, description=self.request.POST['description'], is_weekend=True).save()
-        else:
-            Holiday(date=date, description=self.request.POST['description']).save()
-        return HttpResponseRedirect('./calendar')
+            is_weekend = True
+        try:
+            Holiday(date=date, description=self.request.POST['description'], is_weekend=is_weekend).save()
+        except IntegrityError:
+            obj = Holiday.objects.get(date=date)
+            obj.description = self.request.POST['description']
+            obj.save()
+        return HttpResponseRedirect('calendar')
 
 
 class WorkForm(forms.ModelForm):
