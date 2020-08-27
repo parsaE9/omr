@@ -4,6 +4,10 @@
     min-height: 87vh;
 }
 
+.work {
+    height: 60px;
+}
+
 input {
     float: right;
     margin: 10px 0 0 10px;
@@ -91,7 +95,7 @@ input {
 }
 
 /*.datepicker-jalali .datepicker-days .day {*/
-    /*background: red;*/
+/*background: red;*/
 /*}*/
 
 .datepicker-jalali .datepicker-days .day.today, .datepicker-jalali .datepicker-month .month.this, .datepicker-jalali .datepicker-years .year.this {

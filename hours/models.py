@@ -117,3 +117,9 @@ class Holiday(models.Model):
             return str(self.date) + ' : ' + self.description
         else:
             return str(self.date)
+
+    def date_text(self):
+        return jalali_date(self.date).strftime('%A، %-d %B %Y')
+
+    def date_number(self):
+        return jalali_date(self.date).strftime('%Y/%m/%d')

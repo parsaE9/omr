@@ -27,15 +27,33 @@
             <input type="text" placeholder="توضیحات" name="description" style="width: 40vmin">
             <input type="submit" value="ثبت" class="btn btn-success float-left submit">
         </form>
-        <br>
-        <br>
-        {% for item in object %}
-            <p>{{ item }}</p>
-        {% endfor %}
-        <p>{{ today }}</p>
-    </div>
-    <script>
+        {% if object.count %}
+            <br>
+            <br>
+            <h3 class="float-right">تعطیلات</h3>
+            <br>
+            <br>
+            <div class="col-12">
+                {% for item in object %}
 
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <div class="work card white-card table-responsive" data-project="{{ work.project.id }}">
+                            <div class="info">
+                                <span class="duration number float-right">{{ item.date_number }}</span>
+                                <span class="float-right">{{ item.description }}</span>
+                                <a href="{% url 'calendar-delete' item.id %}"><span class="fa fa-remove" style="color: #ff0000"></span></a>
+                            </div>
+                        </div>
+                    </form>
+                {% endfor %}
+
+            </div>
+        {% endif %}
+
+    </div>
+
+    <script>
 
         $(".calender").datepicker({
             altField: "#calenderSelector",
@@ -44,7 +62,7 @@
         });
 
         var a = document.querySelectorAll('.day');
-        for (var i = 0; i < a.length; i++){
+        for (var i = 0; i < a.length; i++) {
             a[i].addEventListener('click', test, false);
         }
 
@@ -52,12 +70,11 @@
             console.log("hiiii");
             var g_date = document.getElementById('calenderSecondarySelector');
             console.log(g_date.value);
-            if ("{{ object }}".indexOf(g_date.value) >= 0){
+            if ("{{ object }}".indexOf(g_date.value) >= 0) {
                 console.log('&&&&&');
             }
             console.log("{{ object }}");
         }
-
 
     </script>
 {% endblock %}

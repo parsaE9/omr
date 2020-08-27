@@ -36,7 +36,7 @@
             <br>
             <br>
             <ul class="hours float-right nav">
-                {% for item in employee_names %}
+                {% for item in employee_detail %}
                     <li class="nav-item">
                         <a href="{% url 'employee-admin' organization.slug item.employee__username %}"
                            class="badge badge-primary">{{ item.employee__last_name|default_if_none:'...' }}</a>

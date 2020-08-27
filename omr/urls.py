@@ -17,7 +17,9 @@ urlpatterns = [
 
 
 	url(r'^user/?$', login_required(UserDetail.as_view()), name='user'),
+
 	url(r'^calendar/?$', login_required(CalendarView.as_view()), name='calendar'),
+	url(r'^calendar/(?P<pk>[\d]+)/?$', login_required(CalendarDeleteView.as_view()), name='calendar-delete'),
 
 	url(r'^works/create/?$', login_required(WorkCreate.as_view()), name='work-create'),
 	url(r'^works/update/(?P<pk>[\d]+)/?$', login_required(WorkUpdate.as_view()), name='work-update'),

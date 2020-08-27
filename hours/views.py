@@ -2,6 +2,7 @@ import jdatetime
 from datetime import datetime
 from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse_lazy
 from django.utils.dateparse import parse_duration
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
@@ -92,8 +93,6 @@ class OrganizationStats(DetailView):
     model = Organization
     my_dictionary = {}
 
-    # form = ChartDateForm()
-
     def get_context_data(self, **kwargs):
         context = super(OrganizationStats, self).get_context_data(**kwargs)
         print("--------------")
@@ -116,8 +115,11 @@ class OrganizationStats(DetailView):
         # TODO BEGIN
         gregorian_date_source = ''
         gregorian_date_end = ''
-
+        date_range_submitted = False
         if self.my_dictionary.get('date-source') and self.my_dictionary.get('date-end'):
+            date_range_submitted = True
+
+        if date_range_submitted:
             split_source = self.my_dictionary['date-source'].split('/')
             split_end = self.my_dictionary['date-end'].split('/')
             source = jdatetime.jalali.JalaliToGregorian(int(split_source[0]), int(split_source[1]),
@@ -154,14 +156,20 @@ class OrganizationStats(DetailView):
 
             # TODO
 
-            context['employee_names'] = context['employees']
+            context['employee_detail'] = context['employees']
+            if date_range_submitted:
+                context['employee_detail'] = format_durations(
+                    Work.objects.filter(organization=self.object, employee__is_active=True,
+                                        date__range=[gregorian_date_source, gregorian_date_end]).values(
+                        'employee__last_name', 'employee__username').annotate(duration=Sum('duration')).order_by(
+                        'employee'))
             context['is_selected'] = False
             last_name = self.my_dictionary.get('employee_select')
 
             if last_name and last_name != 'همه':
                 context['works'] = context['works'].filter(employee__last_name=last_name)
                 context['hours'] = context['hours'].filter(employee__last_name=last_name)
-                context['employee_names'] = format_durations(
+                context['employee_detail'] = format_durations(
                     Work.objects.filter(organization=self.object, employee__is_active=True,
                                         employee__last_name=last_name, date__range=[gregorian_date_source,
                                                                                     gregorian_date_end]).
@@ -226,6 +234,9 @@ class UserDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super(UserDetail, self).get_context_data(**kwargs)
         context['organizations'] = self.object.organization_set.all()
+        query = Organization.objects.filter(admin=self.request.user)
+        if query:
+            context['is_admin'] = True
         return context
 
 
@@ -239,11 +250,15 @@ class CalendarView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(CalendarView, self).get_context_data(**kwargs)
         context['today'] = datetime.today().strftime('%Y-%m-%d')
+        query = Organization.objects.filter(admin=self.request.user)
+        if query:
+            context['is_admin'] = True
+        else:
+            raise PermissionDenied
         return context
 
     def post(self, request, *args, **kwargs):
         date = self.request.POST['gregorian-date']
-        print(date)
         is_weekend = False
         if get_weekday_count(date, date, 'friday') or get_weekday_count(date, date, 'thursday'):
             is_weekend = True
@@ -254,6 +269,14 @@ class CalendarView(DetailView):
             obj.description = self.request.POST['description']
             obj.save()
         return HttpResponseRedirect('calendar')
+
+
+class CalendarDeleteView(DeleteView):
+    model = Holiday
+    success_url = reverse_lazy('calendar')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
 
 
 class WorkForm(forms.ModelForm):
